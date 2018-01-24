@@ -1,161 +1,326 @@
-# etcd
+# Pika
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/coreos/etcd?style=flat-square)](https://goreportcard.com/report/github.com/coreos/etcd)
-[![Coverage](https://codecov.io/gh/coreos/etcd/branch/master/graph/badge.svg)](https://codecov.io/gh/coreos/etcd)
-[![Build Status Travis](https://img.shields.io/travis/coreos/etcdlabs.svg?style=flat-square&&branch=master)](https://travis-ci.org/coreos/etcd)
-[![Build Status Semaphore](https://semaphoreci.com/api/v1/coreos/etcd/branches/master/shields_badge.svg)](https://semaphoreci.com/coreos/etcd)
-[![Godoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/coreos/etcd)
-[![Releases](https://img.shields.io/github/release/coreos/etcd/all.svg?style=flat-square)](https://github.com/coreos/etcd/releases)
-[![LICENSE](https://img.shields.io/github/license/coreos/etcd.svg?style=flat-square)](https://github.com/coreos/etcd/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/Qihoo360/pika.svg?branch=master)](https://travis-ci.org/Qihoo360/pika)
 
-**Note**: The `master` branch may be in an *unstable or even broken state* during development. Please use [releases][github-release] instead of the `master` branch in order to get stable binaries.
+## Introduction[中文](https://github.com/Qihoo360/pika/blob/master/README_CN.md)
 
-*the etcd v2 [documentation](Documentation/v2/README.md) has moved*
+Pika is a persistent huge storage service , compatible  with the vast majority of redis interfaces ([details](https://github.com/Qihoo360/pika/wiki/pika-支持的redis接口及兼容情况)), including string, hash, list, zset, set and management interfaces. With the huge amount of data stored, redis may suffer for a capacity bottleneck, and pika was born for solving it. Except huge storage capacity, pika also support master-slave mode by slaveof command, including full and partial synchronization. You can also use pika together with twemproxy or codis(*pika has supported data migration in codis，thanks [left2right](https://github.com/left2right)*) for distributed Redis solution
 
-![etcd Logo](logos/etcd-horizontal-color.png)
 
-etcd is a distributed reliable key-value store for the most critical data of a distributed system, with a focus on being:
+## UserList
 
-* *Simple*: well-defined, user-facing API (gRPC)
-* *Secure*: automatic TLS with optional client cert authentication
-* *Fast*: benchmarked 10,000 writes/sec
-* *Reliable*: properly distributed using Raft
+<table>
+<tr>
+<td height = "100" width = "150"><img src="http://i.imgur.com/dcHpCm4.png" alt="Qihoo"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/ktPV3JU.jpg?2" alt="360game"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/jjZczkN.png" alt="Weibo"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/zoel46r.gif" alt="Garena"></td>
+</tr>
+<tr>
+<td height = "100" width = "150"><img src="http://i.imgur.com/kHqACbn.png" alt="Apus"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/2c57z8U.png" alt="Ffan"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/rUiO5VU.png" alt="Meituan"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/px5mEuW.png" alt="XES"></td>
+</tr>
+<tr>
+<td height = "100" width = "150"><img src="http://imgur.com/yJe4FP8.png" alt="HX"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/o8ZDXCH.png" alt="XL"></td>
+<td height = "100" width = "150"><img src="http://imgur.com/w3qNQ9T.png" alt="GWD"></td>
+<td height = "100" width = "150"><img src="https://imgur.com/KMVr3Z6.png" alt="DYD"></td>
+</tr>
+<tr>
+<td height = "100" width = "150"><img src="http://i.imgur.com/vJbAfri.png" alt="YM"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/aNxzwsY.png" alt="XM"></td>
+<td height = "100" width = "150"><img src="http://i.imgur.com/mrWxwkF.png" alt="XL"></td>
+<td height = "100" width = "150"><img src="http://imgur.com/0oaVKlk.png" alt="YM"></td>
+</tr>
+<tr>
+<td height = "100" width = "150"><img src="https://imgur.com/qN6z25x.png" alt="MM"></td>
+<td height = "100" width = "150"><img src="https://i.imgur.com/G9MOvZe.jpg" alt="VIP"></td>
+<td height = "100" width = "150"><img src="https://imgur.com/vQW5qr3.png" alt="LK"></td>
+</tr>
+</table>
 
-etcd is written in Go and uses the [Raft][raft] consensus algorithm to manage a highly-available replicated log.
+[More](https://github.com/Qihoo360/pika/blob/master/USERS.md)
 
-etcd is used [in production by many companies](./Documentation/production-users.md), and the development team stands behind it in critical deployment scenarios, where etcd is frequently teamed with applications such as [Kubernetes][k8s], [fleet][fleet], [locksmith][locksmith], [vulcand][vulcand], [Doorman][doorman], and many others. Reliability is further ensured by rigorous [testing][etcd-tests].
+## Feature
 
-See [etcdctl][etcdctl] for a simple command line client.
+* huge storage capacity
+* compatible with redis interface, you can migrate to pika easily
+* support master-slave mode (slaveof)
+* various [management](https://github.com/Qihoo360/pika/wiki/pika的一些管理命令方式说明) interfaces
 
-[raft]: https://raft.github.io/
-[k8s]: http://kubernetes.io/
-[doorman]: https://github.com/youtube/doorman
-[fleet]: https://github.com/coreos/fleet
-[locksmith]: https://github.com/coreos/locksmith
-[vulcand]: https://github.com/vulcand/vulcand
-[etcdctl]: https://github.com/coreos/etcd/tree/master/etcdctl
-[etcd-tests]: http://dash.etcd.io
+## For developer
 
-## Community meetings
+### RoadMap
 
-etcd contributors and maintainers have bi-weekly meetings at 11:00 AM (USA Pacific) on Tuesdays. There is an [iCalendar][rfc5545] format for the meetings [here](meeting.ics). Anyone is welcome to join via [Zoom][zoom] or audio-only: +1 669 900 6833. An initial agenda will be posted to the [shared Google docs][shared-meeting-notes] a day before each meeting, and everyone is welcome to suggest additional topics or other agendas.
+* optimize engine nemo to improve list performance
 
-[rfc5545]: https://tools.ietf.org/html/rfc5545
-[zoom]: https://coreos.zoom.us/j/854793406
-[shared-meeting-notes]: https://docs.google.com/document/d/1DbVXOHvd9scFsSmL2oNg4YGOHJdXqtx583DmeVWrB_M/edit#
+### Dependencies
 
-## Getting started
+* snappy - a library for fast data compression
+* glog - google log library
 
-### Getting etcd
+Upgrade your gcc to version at least 4.8 to get C++11 support.
 
-The easiest way to get etcd is to use one of the pre-built release binaries which are available for OSX, Linux, Windows, [rkt][rkt], and Docker. Instructions for using these binaries are on the [GitHub releases page][github-release].
+### Supported platforms
 
-For those wanting to try the very latest version, [build the latest version of etcd][dl-build] from the `master` branch. This first needs [*Go*](https://golang.org/) installed (version 1.9+ is required). All development occurs on `master`, including new features and bug fixes. Bug fixes are first targeted at `master` and subsequently ported to release branches, as described in the [branch management][branch-management] guide.
+* linux - Centos 5&6
 
-[rkt]: https://github.com/rkt/rkt/releases/
-[github-release]: https://github.com/coreos/etcd/releases/
-[branch-management]: ./Documentation/branch_management.md
-[dl-build]: ./Documentation/dl_build.md#build-the-latest-version
+* linux - Ubuntu
 
-### Running etcd
+If it comes to some missing libs, install them according to the prompts and retry it.
 
-First start a single-member cluster of etcd.
+### Compile
 
-If etcd is installed using the [pre-built release binaries][github-release], run it from the installation location as below:
+Upgrade your gcc to version at least 4.8 to get C++11 support.
 
-```sh
-/tmp/etcd-download-test/etcd
-```
-The etcd command can be simply run as such if it is moved to the system path as below:
-
-```sh
-mv /tmp/etcd-download-test/etcd /usr/locale/bin/
-
-etcd
-```
-
-If etcd is [build from the master branch][dl-build], run it as below:
-
-```sh
-./bin/etcd
-```
-
-This will bring up etcd listening on port 2379 for client communication and on port 2380 for server-to-server communication.
-
-Next, let's set a single key, and then retrieve it:
+Get the source code
 
 ```
-ETCDCTL_API=3 etcdctl put mykey "this is awesome"
-ETCDCTL_API=3 etcdctl get mykey
+git clone https://github.com/Qihoo360/pika.git
 ```
 
-That's it! etcd is now running and serving client requests. For more
 
-- [Animated quick demo][demo-gif]
-- [Interactive etcd playground][etcd-play]
+Then compile pika, all submodules will be updated automatically.
 
-[demo-gif]: ./Documentation/demo.md
-[etcd-play]: http://play.etcd.io/
-
-### etcd TCP ports
-
-The [official etcd ports][iana-ports] are 2379 for client requests, and 2380 for peer communication.
-
-[iana-ports]: http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt
-
-### Running a local etcd cluster
-
-First install [goreman](https://github.com/mattn/goreman), which manages Procfile-based applications.
-
-Our [Procfile script](./Procfile) will set up a local example cluster. Start it with:
-
-```sh
-goreman start
+```
+make
 ```
 
-This will bring up 3 etcd members `infra1`, `infra2` and `infra3` and etcd `grpc-proxy`, which runs locally and composes a cluster.
+## Usage
 
-Every cluster member and proxy accepts key value reads and key value writes.
+```
+./output/bin/pika -c ./conf/pika.conf
+```
 
-### Running etcd on Kubernetes
+## Performance (provided by [deep011](https://github.com/deep011))
 
-To run an etcd cluster on Kubernetes, try [etcd operator](https://github.com/coreos/etcd-operator).
+### test environment
 
-### Next steps
+**CPU module**：Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz
 
-Now it's time to dig into the full etcd API and other guides.
+**CPU threads**：56
 
-- Read the full [documentation][fulldoc].
-- Explore the full gRPC [API][api].
-- Set up a [multi-machine cluster][clustering].
-- Learn the [config format, env variables and flags][configuration].
-- Find [language bindings and tools][integrations].
-- Use TLS to [secure an etcd cluster][security].
-- [Tune etcd][tuning].
+**MEMORY**：256G
 
-[fulldoc]: ./Documentation/docs.md
-[api]: ./Documentation/dev-guide/api_reference_v3.md
-[clustering]: ./Documentation/op-guide/clustering.md
-[configuration]: ./Documentation/op-guide/configuration.md
-[integrations]: ./Documentation/integrations.md
-[security]: ./Documentation/op-guide/security.md
-[tuning]: ./Documentation/tuning.md
+**DISK**：3T flash
 
-## Contact
+**NETWORK**：10GBase-T/Full * 2
 
-- Mailing list: [etcd-dev](https://groups.google.com/forum/?hl=en#!forum/etcd-dev)
-- IRC: #[etcd](irc://irc.freenode.org:6667/#etcd) on freenode.org
-- Planning/Roadmap: [milestones](https://github.com/coreos/etcd/milestones), [roadmap](./ROADMAP.md)
-- Bugs: [issues](https://github.com/coreos/etcd/issues)
+**OS**：centos 6.6
 
-## Contributing
+### benchmark tools
 
-See [CONTRIBUTING](CONTRIBUTING.md) for details on submitting patches and the contribution workflow.
+[**vire-benchmark**](https://deep011.github.io/vire-benchmark)
 
-## Reporting bugs
+### Test 1
 
-See [reporting bugs](Documentation/reporting_bugs.md) for details about reporting any issues.
+#### Purpose
 
-### License
+With different number of pika worker threads, we test pika's max QPS.
 
-etcd is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for details.
+#### Condition
+
+pika db_size : 800G
+
+value : 128bytes
+
+Threads are not bound to CPU cores.
+
+#### Result
+
+Description : Horizontal axis is the number of worker threads; Vertical axis is the QPS. The value size is 128bytes. set3/get7 means 30% set and 70% get.
+
+<img src="https://deep011.github.io/public/images/pika_benchmark/pika_threads_test.png" height = "60%" width = "60%" alt="1"/>
+
+#### Conclusion
+
+The best pika worker threads number is 20-24.
+
+### Test 2
+
+#### Purpose
+
+With the optimal worker threads number, we test pika's round-trip time.
+
+#### Condition
+
+**pika db_size**：800G
+
+**value**：128bytes
+
+#### Result
+
+```c
+====== GET ======
+  10000000 requests completed in 23.10 seconds
+  200 parallel clients
+  3 bytes payload
+  keep alive: 1
+99.89% <= 1 milliseconds
+100.00% <= 2 milliseconds
+100.00% <= 3 milliseconds
+100.00% <= 5 milliseconds
+100.00% <= 6 milliseconds
+100.00% <= 7 milliseconds
+100.00% <= 7 milliseconds
+432862.97 requests per second
+```
+
+```c
+====== SET ======
+  10000000 requests completed in 36.15 seconds
+  200 parallel clients
+  3 bytes payload
+  keep alive: 1
+91.97% <= 1 milliseconds
+99.98% <= 2 milliseconds
+99.98% <= 3 milliseconds
+99.98% <= 4 milliseconds
+99.98% <= 5 milliseconds
+99.98% <= 6 milliseconds
+99.98% <= 7 milliseconds
+99.98% <= 9 milliseconds
+99.98% <= 10 milliseconds
+99.98% <= 11 milliseconds
+99.98% <= 12 milliseconds
+99.98% <= 13 milliseconds
+99.98% <= 16 milliseconds
+99.98% <= 18 milliseconds
+99.99% <= 19 milliseconds
+99.99% <= 23 milliseconds
+99.99% <= 24 milliseconds
+99.99% <= 25 milliseconds
+99.99% <= 27 milliseconds
+99.99% <= 28 milliseconds
+99.99% <= 34 milliseconds
+99.99% <= 37 milliseconds
+99.99% <= 39 milliseconds
+99.99% <= 40 milliseconds
+99.99% <= 46 milliseconds
+99.99% <= 48 milliseconds
+99.99% <= 49 milliseconds
+99.99% <= 50 milliseconds
+99.99% <= 51 milliseconds
+99.99% <= 52 milliseconds
+99.99% <= 61 milliseconds
+99.99% <= 63 milliseconds
+99.99% <= 72 milliseconds
+99.99% <= 73 milliseconds
+99.99% <= 74 milliseconds
+99.99% <= 76 milliseconds
+99.99% <= 83 milliseconds
+99.99% <= 84 milliseconds
+99.99% <= 88 milliseconds
+99.99% <= 89 milliseconds
+99.99% <= 133 milliseconds
+99.99% <= 134 milliseconds
+99.99% <= 146 milliseconds
+99.99% <= 147 milliseconds
+100.00% <= 203 milliseconds
+100.00% <= 204 milliseconds
+100.00% <= 208 milliseconds
+100.00% <= 217 milliseconds
+100.00% <= 218 milliseconds
+100.00% <= 219 milliseconds
+100.00% <= 220 milliseconds
+100.00% <= 229 milliseconds
+100.00% <= 229 milliseconds
+276617.50 requests per second
+```
+
+#### Conclusion
+
+Both the 99.9% get/set RTT are below 2ms.
+
+### Test 3
+
+#### Purpose
+
+With the optimal worker threads number, we test the max qps of different commands.
+
+#### Condition
+
+**pika worker threads**：20
+
+**key count**：10000
+
+**field count**：100（except list）
+
+**value**：128bytes
+
+**commands execute times**：10000000(except lrange)
+
+#### Result
+
+```c
+PING_INLINE: 548606.50 requests per second
+PING_BULK: 544573.31 requests per second
+SET: 231830.31 requests per second
+GET: 512163.91 requests per second
+INCR: 230861.56 requests per second
+MSET (10 keys): 94991.12 requests per second
+LPUSH: 196093.81 requests per second
+RPUSH: 195186.69 requests per second
+LPOP: 131156.14 requests per second
+RPOP: 152292.77 requests per second
+LPUSH (needed to benchmark LRANGE): 196734.20 requests per second
+LRANGE_10 (first 10 elements): 334448.16 requests per second
+LRANGE_100 (first 100 elements): 50705.12 requests per second
+LRANGE_300 (first 300 elements): 16745.16 requests per second
+LRANGE_450 (first 450 elements): 6787.94 requests per second
+LRANGE_600 (first 600 elements): 3170.38 requests per second
+SADD: 160885.52 requests per second
+SPOP: 128920.80 requests per second
+HSET: 180209.41 requests per second
+HINCRBY: 153364.81 requests per second
+HINCRBYFLOAT: 141095.47 requests per second
+HGET: 506791.00 requests per second
+HMSET (10 fields): 27777.31 requests per second
+HMGET (10 fields): 38998.52 requests per second
+HGETALL: 109059.58 requests per second
+ZADD: 120583.62 requests per second
+ZREM: 161689.33 requests per second
+PFADD: 6153.47 requests per second
+PFCOUNT: 28312.57 requests per second
+PFADD (needed to benchmark PFMERGE): 6166.37 requests per second
+PFMERGE: 6007.09 requests per second
+```
+
+### Test 4
+
+#### Purpose
+
+Compare the pika max qps with the redis.
+
+#### Condition
+
+**pika worker threads**：20
+
+**key count**：10000
+
+**field count**：100（except list）
+
+**value**：128bytes
+
+**commands execute times**：10000000(except lrange)
+
+**Redis version**：3.2.0
+
+#### Result
+
+<img src="https://deep011.github.io/public/images/pika_benchmark/pika_vs_redis_qps.png" height = "60%" width = "60%" alt="1"/>
+ 
+## Documents
+
+1. [Wiki](https://github.com/Qihoo360/pika/wiki)
+
+## Contact Us
+
+Mail: g-infra-bada@360.cn
+
+QQ group: 294254078
+For more information about Pika, Atlas and some other technology please pay attention to our Hulk platform official account
+
+<img src="http://i.imgur.com/pL4ni57.png" height = "50%" width = "50%" alt="2">
